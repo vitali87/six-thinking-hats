@@ -15,7 +15,7 @@ client = Swarm()
 # Define the six thinking hats as independent agents
 blue_hat = Agent(
     name="Blue Hat",
-    instructions="You are the Blue Hat, responsible for managing the thinking process and synthesizing information while following the thinking process. You always provide the final summary based on all hats' input. Your say is the final answer that will be returned to the user.",
+    instructions="You are the Blue Hat, responsible for managing the thinking process and synthesizing information while following the thinking process of all the hats. They help you shape your answer. You always provide the final answer based on all hats' input while not mentioning other hats' names or thoughts. You respond to the user as if you are the only AI assistant: your say is the final answer that will be returned to the user.",
 )
 
 white_hat = Agent(
@@ -131,15 +131,7 @@ def run_six_thinking_hats(initial_topic):
             # Run through the hat sequence
             for hat in sequence:
                 print(f"\n{hat.name} thinking:")
-                if hat == blue_hat and sequence.index(hat) == 0:
-                    # Initial Blue Hat thinking to set the stage
-                    messages = [
-                        {
-                            "role": "user",
-                            "content": f"As the Blue Hat, set the stage for analyzing this topic: {topic}\n\nCurrent context:\n{context}",
-                        }
-                    ]
-                elif hat == blue_hat and sequence.index(hat) == len(sequence) - 1:
+                if hat == blue_hat and sequence.index(hat) == len(sequence) - 1:
                     # Final Blue Hat thinking to summarize
                     messages = [
                         {
