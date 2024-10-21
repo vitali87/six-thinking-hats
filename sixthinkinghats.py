@@ -1,7 +1,41 @@
 import os
+import sys
 from dotenv import load_dotenv
 from swarm import Swarm, Agent
 from openai import OpenAI
+import readline
+
+
+def get_multiline_input(prompt):
+    print(f"{prompt} (Enter two consecutive blank lines to finish)")
+    lines = []
+    empty_line_count = 0
+    while True:
+        try:
+            line = input()
+            if line.strip() == "":
+                empty_line_count += 1
+                if empty_line_count == 2:
+                    break
+            else:
+                empty_line_count = 0
+            lines.append(line)
+        except EOFError:
+            break
+    return "\n".join(lines[:-1])  # Remove the last empty line
+
+
+# Set up readline to use a history file
+history_file = os.path.expanduser("~/.sixthinkinghats_history")
+try:
+    readline.read_history_file(history_file)
+except FileNotFoundError:
+    pass
+
+# Save history on exit
+import atexit
+
+atexit.register(readline.write_history_file, history_file)
 
 # Load environment variables from .env file
 load_dotenv()
@@ -155,9 +189,9 @@ def run_six_thinking_hats(initial_topic):
                 context += f"\n{hat.name}: {response.messages[-1]['content']}\n"
 
             # Collect user input after each round
-            user_input = input(
-                "\nUser (enter new input or press Enter to continue with the same topic): "
-            )
+            user_input = get_multiline_input("\nUser")
+            if isinstance(user_input, list):
+                user_input = "".join(user_input)
             if user_input:
                 context += f"\nUser Input: {user_input}\n"
                 topic = (
